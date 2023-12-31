@@ -24,7 +24,7 @@ ShowWordCount: true
 # 是否开启搜索
 searchHidden: false
 # 标签
-tags: ["Unity","PlayableDirector","Timeline"]
+tags: ["Hugo","Github Pages"]
 
 draft: false
 
