@@ -140,7 +140,13 @@
     <p>利用Hugo&#43;Github Pages搭建个人博客 转载于：https://www.cnblogs.com/liumylay/articles/17936667.html
 转载于：https://www.cnblogs.com/liumylay/articles/17936667.html
 转载于：https://www.cnblogs.com/liumylay/articles/17936667.html
-前言 创建 GitHub 帐户 安装git，下载对应系统版本 exe ，无脑点击下一步。 安装hugo(extended edition, v0.112.0 or later) 打开 Github 中的 Hugo 库，打开右边侧边栏About下面的 Realeases，下载最新的版本，本次下载为：hugo_extended_0.121.1_windows-amd64.zip 解压后，将其中的 hugo.exe 放到指定的安装目录，比如 D:\softwares\Hugo\bin，然后将该目录添加到系统环境变量（win&#43;R → sysdm.cpl → 高级 → 环境变量 → 系统变量 Path）的 Path 下。 打开命令行，输入 hugo version，显示版本号即为安装成功 在几分钟内利用hugo快速发布自己的个人博客 快速开始 使用Git Bash依次输入以下命令，即可建立预览一个PaperMod主题的hugo网站：
+前言 创建 GitHub 帐户
+安装git，下载对应系统版本 exe ，无脑点击下一步。
+安装hugo(extended edition, v0.112.0 or later)
+打开 Github 中的 Hugo 库，打开右边侧边栏About下面的 Realeases，下载最新的版本，本次下载为：hugo_extended_0.121.1_windows-amd64.zip
+解压后，将其中的 hugo.exe 放到指定的安装目录，比如 D:\softwares\Hugo\bin，然后将该目录添加到系统环境变量（win&#43;R → sysdm.cpl → 高级 → 环境变量 → 系统变量 Path）的 Path 下。
+打开命令行，输入 hugo version，显示版本号即为安装成功
+在几分钟内利用hugo快速发布自己的个人博客 快速开始 使用Git Bash依次输入以下命令，即可建立预览一个PaperMod主题的hugo网站：
 hugo new site myblog cd myblog git init git submodule add --depth=1 https://github.com/adityatelange/hugo-PaperMod.git themes/PaperMod echo &#34;theme = &#39;PaperMod&#39;&#34; &gt;&gt; hugo.toml hugo server 通过终端中显示的 URL 查看您的站点。按此按钮Ctrl &#43; C可停止 Hugo 的开发服务器。...</p>
   </div>
   <footer class="entry-footer"><span title='2023-12-31 20:31:46 +0800 CST'>December 31, 2023</span></footer>
