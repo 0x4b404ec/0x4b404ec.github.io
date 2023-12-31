@@ -7,14 +7,16 @@ paginate: 5
 
 # 启用机器人TXT
 enableRobotsTXT: true
-# 创建草稿箱
+
+# 创建时包括草稿
 buildDrafts: false
-#
+# 
 buildFuture: false
+# 
 buildExpired: false
 
 # google分析
-googleAnalytics: UA-123-45
+# googleAnalytics: UA-123-45
 
 minify:
   disableXML: true
@@ -71,8 +73,7 @@ params:
   showtoc: true
   # 目录展开
   tocopen: true
-
-
+  
   enableGitInfo: true
 
   # 网站图标
@@ -139,10 +140,13 @@ params:
     yandex:
       SiteVerificationTag: "XYZabc"
 
-  cover:
-    hidden: true # hide everywhere but not in structured data
-    hiddenInList: true # hide on list pages and home
-    hiddenInSingle: true # hide on single page
+  # 封面
+  cover:    
+    linkFullImages: false              # 要打开全尺寸的封面图像，请点击封面 - To open full size cover images on click on cover
+    responsiveImages: true            # 启用/禁用生成响应性封面图像 - To enable/disable generation of responsive cover images
+    hidden: false                     # 隐藏在任何地方，但不是在结构化数据中 - hide everywhere but not in structured data
+    hiddenInList: false               # hide on list pages and home
+    hiddenInSingle: false             # hide on single page
 
   # editPost:
   #   URL: "https://github.com/<path_to_repo>/content"
