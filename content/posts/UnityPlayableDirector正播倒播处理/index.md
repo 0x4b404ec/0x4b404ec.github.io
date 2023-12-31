@@ -1,9 +1,33 @@
-+++
-title = 'Unity PlayableDirector正播倒播处理'
-date = 2023-12-31T19:57:41+08:00
-draft = false
+---
+title : 'Unity PlayableDirector正播倒播处理'
+date : 2023-12-31T19:57:41+08:00
+draft : false
+description: ""
+author: "0x4b404ec"
+# 使用hugo目录
+UseHugoToc: true
+# 显示目录
+showToc: true
+# 目录默认展开
+TocOpen: true
+hidemeta: false
+comments: false
+# canonicalURL: "https://canonical.url/to/page"
+disableHLJS: true # to disable highlightjs
+disableShare: false
+hideSummary: false
 
-+++
+ShowReadingTime: true
+ShowBreadCrumbs: true
+ShowPostNavLinks: true
+ShowWordCount: true
+# ShowRssButtonInSectionTermList: true
+# 是否开启搜索
+searchHidden: false
+# 标签
+tags: ["Unity","PlayableDirector","Timeline"]
+
+---
 
 # Unity PlayableDirector(Timeline) 正播倒播处理
 

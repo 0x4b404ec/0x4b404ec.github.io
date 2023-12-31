@@ -1,9 +1,34 @@
-+++
-title = '[转] Hugo+GithubAction搭建Pages'
-date = 2023-12-31T20:31:46+08:00
-draft = false
+---
+title : "[转] Hugo+GithubAction搭建Pages"
+date : 2023-12-31T20:31:46+08:00
+description: ""
+author: "0x4b404ec"
+# 使用hugo目录
+UseHugoToc: true
+# 显示目录
+showToc: true
+# 目录默认展开
+TocOpen: true
+hidemeta: false
+comments: false
+# canonicalURL: "https://canonical.url/to/page"
+disableHLJS: true # to disable highlightjs
+disableShare: false
+hideSummary: false
 
-+++
+ShowReadingTime: true
+ShowBreadCrumbs: true
+ShowPostNavLinks: true
+ShowWordCount: true
+# ShowRssButtonInSectionTermList: true
+# 是否开启搜索
+searchHidden: false
+# 标签
+tags: ["Unity","PlayableDirector","Timeline"]
+
+draft: false
+
+---
 
 
 
@@ -25,7 +50,7 @@ draft = false
 
    - 打开 Github 中的 [Hugo](https://github.com/gohugoio/hugo) 库，打开右边侧边栏About下面的 Realeases，下载最新的版本，本次下载为：[hugo_extended_0.121.1_windows-amd64.zip](https://github.com/gohugoio/hugo/releases/download/v0.121.1/hugo_extended_0.121.1_windows-amd64.zip)
 
-     ![img](./.index_assets/3275074-20231230193711801-1034771933-20231231205242597.png)
+     ![img](./index.assets/3275074-20231230193711801-1034771933-20231231205242597.png)
 
    - 解压后，将其中的 hugo.exe 放到指定的安装目录，比如 D:\softwares\Hugo\bin，然后将该目录添加到系统环境变量（win+R → sysdm.cpl → 高级 → 环境变量 → 系统变量 Path）的 Path 下。
 
@@ -213,7 +238,7 @@ GitHub 通过 GitHub Pages 服务直接从 GitHub 存储库通过 SSL 为个人�
 ### Step3.访问您的 GitHub 存储库，从主菜单中选择设置 > 页面。
 
 在屏幕中央，将源更改为`GitHub Actions`。改变是立竿见影的；您不必按“保存”按钮。
-![img](./.index_assets/3275074-20231230193816275-664947653-20231231205204800.png)
+![img](./index.assets/3275074-20231230193816275-664947653-20231231205204800.png)
 
 ### Step4.在本地存储库中根目录下创建一个空文件 `.github/workflows/hugo.yaml`
 
@@ -327,7 +352,7 @@ To github.com:liumy-lay/liumy-lay.github.io.git
 
 将来，每当您从本地存储库推送更改时，GitHub 都会重建您的站点并部署更改。
 
-![img](./.index_assets/3275074-20231230193802395-854741209-20231231205308987.png)
+![img](./index.assets/3275074-20231230193802395-854741209-20231231205308987.png)
 
 ## 总结
 

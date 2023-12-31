@@ -1,0 +1,208 @@
+theme: "PaperMod"
+
+baseURL: "https://0x4b404ec.github.io/"
+title: '0x4b404ec'
+# 页数
+paginate: 5
+
+# 启用机器人TXT
+enableRobotsTXT: true
+# 创建草稿箱
+buildDrafts: false
+#
+buildFuture: false
+buildExpired: false
+
+# google分析
+googleAnalytics: UA-123-45
+
+minify:
+  disableXML: true
+  minifyOutput: true
+
+params:
+  # 设置环境
+  env: production # to enable google analytics, opengraph, twitter-cards and schema.
+  # 网站标题
+  title: '0x4b404ec'
+  # 日期格式化
+  DateFormat: "2006-01-02"
+  # RSS 输出全文
+  ShowFullTextinRSS: true   
+  # 网站描述
+  description: "0x4b404ec's Blog"
+  # 主页添加关键字
+  keywords: [Blog, Unity, PaperMod]
+  # 是否隐藏元元素，date, read-time, author and available-translations for page
+  hidemeta: false
+  # 作者
+  author: "0x4b404ec" #author: ["Me", "You"] # multiple authors
+  # opengraph, twitter-cards的图片链接或路径
+  images: ["<link or path of image for opengraph, twitter-cards>"]
+  # 默认主题
+  defaultTheme: auto # auto, dark, light
+  # 禁用主题切换
+  disableThemeToggle: false
+  # 文章显示阅读时间
+  ShowReadingTime: true
+  # 文章最下方显示分享按钮
+  ShowShareButtons: false
+  # 在单个帖子下添加上一个/下一个帖子建议
+  ShowPostNavLinks: true
+  # 在标题上方添加面包屑导航，以显示子部分和主页导航
+  ShowBreadCrumbs: true
+  # 在代码块中添加复制按钮以复制其包含的代码
+  ShowCodeCopyButtons: true
+  # 显示文章字数
+  ShowWordCount: true
+  # 显示RSS图标
+  ShowRssButtonInSectionTermList: true
+  # 禁用第一个帖子的无卡特别外观
+  disableSpecial1stPost: false
+  # 禁用返回最上方
+  disableScrollToTop: false
+  # 是否显示评论
+  comments: false
+  # 是否隐藏摘要
+  hideSummary: false
+  # 使用hugo目录
+  UseHugoToc: true
+  # 显示目录
+  showtoc: true
+  # 目录展开
+  tocopen: true
+
+
+  enableGitInfo: true
+
+  # 网站图标
+  assets:    
+    # 设置网站图标
+    favicon: "https://avatars.githubusercontent.com/u/13428164?v=4"
+    favicon16x16: "https://avatars.githubusercontent.com/u/13428164?v=4"
+    favicon32x32: "https://avatars.githubusercontent.com/u/13428164?v=4"
+    apple_touch_icon: "https://avatars.githubusercontent.com/u/13428164?v=4"
+    safari_pinned_tab: "<link / abs url>"
+    # 是否使用 Highlight.js 加载
+    disableHLJS: true
+    # 资源的子资源完整性
+    # disableFingerprinting: true
+
+  label:
+    # 显示标题以外的其他标签文本
+    text: "0x4b404ec's Blog"
+    # 在标签中显示徽标图像
+    icon: https://avatars.githubusercontent.com/u/13428164?v=4
+    iconHeight: 35
+
+  # 简介模式 profile-mode---------------------------------
+  profileMode:
+    enabled: true # 需要显式设置
+    title: '0x4b404ec'
+    subtitle: "A digital peasant."
+    imageUrl: "https://avatars.githubusercontent.com/u/13428164?v=4"
+    imageWidth: 120
+    imageHeight: 120
+    imageTitle: Github_Avatar
+    # buttons:
+    #   - name: Posts
+    #     url: posts
+    #   - name: Tags
+    #     url: tags
+
+  # home-info mode---------------------------------
+  # homeInfoParams:
+  #   Title: "Hi!"
+  #   Content: Welcome to my blog~ 🐰
+
+  socialIcons:
+    # - name: twitter
+    #   url: "https://twitter.com/"
+    - name: github
+      url: "https://github.com/0x4b404ec/"
+    - name: stackoverflow
+      url: "https://stackoverflow.com/users/7737930/a"    
+    - name: bilibili
+      url: "https://space.bilibili.com/14774685/"
+    - name: steam
+      url: "https://steamcommunity.com/profiles/76561198100031326/"
+
+    # - name: email
+    #   url: "wongze.dev@gmail.com"
+
+
+  analytics:
+    google:
+      SiteVerificationTag: "XYZabc"
+    bing:
+      SiteVerificationTag: "XYZabc"
+    yandex:
+      SiteVerificationTag: "XYZabc"
+
+  cover:
+    hidden: true # hide everywhere but not in structured data
+    hiddenInList: true # hide on list pages and home
+    hiddenInSingle: true # hide on single page
+
+  # editPost:
+  #   URL: "https://github.com/<path_to_repo>/content"
+  #   Text: "Suggest Changes" # edit text
+  #   appendFilePath: true # to append file path to Edit link
+
+  # for search
+  # https://fusejs.io/api/options.html
+  fuseOpts:
+    isCaseSensitive: false
+    includeMatches: true
+    shouldSort: true
+    location: 0
+    distance: 1000
+    threshold: 0.4
+    minMatchCharLength: 0
+    keys: ["title", "permalink", "summary", "content"]
+    
+
+# 添加菜单项，它将出现在每个页面的标题中。
+# name：显示名称 url：路径或外部链接 weight：权重
+menu:
+  main:
+    - identifier: about
+      name: Me
+      url: /about
+      weight: 1
+    - identifier: archive
+      name: Archive
+      url: /archives
+      weight: 2
+    - identifier: search
+      name: Search
+      url: /search
+      weight: 3      
+    - identifier: tags
+      name: Tags
+      url: /tags/
+      weight: 20
+    - identifier: Theme Tutorials
+      name: Theme.org
+      url: https://github.com/adityatelange/hugo-PaperMod/wiki
+      weight: 30
+
+
+# Read: https://github.com/adityatelange/hugo-PaperMod/wiki/FAQs#using-hugos-syntax-highlighter-chroma
+pygmentsUseClasses: true
+
+markup:
+  highlight:
+    noClasses: false
+    # anchorLineNos: true
+    codeFences: true
+    guessSyntax: true
+    lineNos: true
+    style: monokai
+
+# PaperMod uses Fuse.js Basic for seach functionality
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON # is necessary
