@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Unity PlayableDirector正播倒播处理 | 0x4b404ec&#39;s Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="Unity PlayableDirector(Timeline) 正播倒播处理 项目要求控制Timeline的播放状态，官方给出的方案只有正播的处理，并没有倒播的接口。
+而且网上搜索的一些方案都是使用协程，但是协程在处理中途暂停继续播放上比较难处理。
+所以自己随便写了一个。处理上比较傻瓜。
+下载DoTween插件 略&hellip;
+TimelineHelper.cs 主要是提供了两个静态接口，用来实现挂TimelineDirector组件
+using UnityEngine; using UnityEngine.Playables; public static class PlayableExpansion { /// &lt;summary&gt; /// 为director添加自定义控制器 /// &lt;/summary&gt; /// &lt;param name=&#34;director&#34;&gt;&lt;/param&gt; /// &lt;returns&gt;&lt;/returns&gt; public static PlayableController AddPlayableController(this PlayableDirector director) { return director.gameObject.AddComponent&lt;PlayableController&gt;(); } /// &lt;summary&gt; /// 为obj添加自定义控制器 /// &lt;/summary&gt; /// &lt;param name=&#34;obj&#34;&gt;&lt;/param&gt; /// &lt;returns&gt;&lt;/returns&gt; public static PlayableController AddPlayableController(this GameObject obj) { return obj.AddComponent&lt;PlayableController&gt;(); } } TimelineDirector.cs Timeline的相关控制封装，没有用官方播放的API，只用到了PlayableDirector时间和采样(PlayableDirector.time和PlayableDirector.Evaluate())
+using DG.Tweening; using Sirenix.OdinInspector; using System; using UnityEngine; using UnityEngine.">
+<meta name="author" content="">
+<link rel="canonical" href="https://0x4b404ec.github.io/posts/unityplayabledirector%E6%AD%A3%E6%92%AD%E5%80%92%E6%92%AD%E5%A4%84%E7%90%86/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.2d50b1531bd1b3146d65c5543bd298f7f982786aadee4c223cb3a1cb51906106.css" integrity="sha256-LVCxUxvRsxRtZcVUO9KY9/mCeGqt7kwiPLOhy1GQYQY=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://0x4b404ec.github.io/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://0x4b404ec.github.io/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://0x4b404ec.github.io/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://0x4b404ec.github.io/apple-touch-icon.png">
+<link rel="mask-icon" href="https://0x4b404ec.github.io/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript><meta property="og:title" content="Unity PlayableDirector正播倒播处理" />
+<meta property="og:description" content="Unity PlayableDirector(Timeline) 正播倒播处理 项目要求控制Timeline的播放状态，官方给出的方案只有正播的处理，并没有倒播的接口。
+而且网上搜索的一些方案都是使用协程，但是协程在处理中途暂停继续播放上比较难处理。
+所以自己随便写了一个。处理上比较傻瓜。
+下载DoTween插件 略&hellip;
+TimelineHelper.cs 主要是提供了两个静态接口，用来实现挂TimelineDirector组件
+using UnityEngine; using UnityEngine.Playables; public static class PlayableExpansion { /// &lt;summary&gt; /// 为director添加自定义控制器 /// &lt;/summary&gt; /// &lt;param name=&#34;director&#34;&gt;&lt;/param&gt; /// &lt;returns&gt;&lt;/returns&gt; public static PlayableController AddPlayableController(this PlayableDirector director) { return director.gameObject.AddComponent&lt;PlayableController&gt;(); } /// &lt;summary&gt; /// 为obj添加自定义控制器 /// &lt;/summary&gt; /// &lt;param name=&#34;obj&#34;&gt;&lt;/param&gt; /// &lt;returns&gt;&lt;/returns&gt; public static PlayableController AddPlayableController(this GameObject obj) { return obj.AddComponent&lt;PlayableController&gt;(); } } TimelineDirector.cs Timeline的相关控制封装，没有用官方播放的API，只用到了PlayableDirector时间和采样(PlayableDirector.time和PlayableDirector.Evaluate())
+using DG.Tweening; using Sirenix.OdinInspector; using System; using UnityEngine; using UnityEngine." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://0x4b404ec.github.io/posts/unityplayabledirector%E6%AD%A3%E6%92%AD%E5%80%92%E6%92%AD%E5%A4%84%E7%90%86/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-12-31T19:57:41+08:00" />
+<meta property="article:modified_time" content="2023-12-31T19:57:41+08:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Unity PlayableDirector正播倒播处理"/>
+<meta name="twitter:description" content="Unity PlayableDirector(Timeline) 正播倒播处理 项目要求控制Timeline的播放状态，官方给出的方案只有正播的处理，并没有倒播的接口。
+而且网上搜索的一些方案都是使用协程，但是协程在处理中途暂停继续播放上比较难处理。
+所以自己随便写了一个。处理上比较傻瓜。
+下载DoTween插件 略&hellip;
+TimelineHelper.cs 主要是提供了两个静态接口，用来实现挂TimelineDirector组件
+using UnityEngine; using UnityEngine.Playables; public static class PlayableExpansion { /// &lt;summary&gt; /// 为director添加自定义控制器 /// &lt;/summary&gt; /// &lt;param name=&#34;director&#34;&gt;&lt;/param&gt; /// &lt;returns&gt;&lt;/returns&gt; public static PlayableController AddPlayableController(this PlayableDirector director) { return director.gameObject.AddComponent&lt;PlayableController&gt;(); } /// &lt;summary&gt; /// 为obj添加自定义控制器 /// &lt;/summary&gt; /// &lt;param name=&#34;obj&#34;&gt;&lt;/param&gt; /// &lt;returns&gt;&lt;/returns&gt; public static PlayableController AddPlayableController(this GameObject obj) { return obj.AddComponent&lt;PlayableController&gt;(); } } TimelineDirector.cs Timeline的相关控制封装，没有用官方播放的API，只用到了PlayableDirector时间和采样(PlayableDirector.time和PlayableDirector.Evaluate())
+using DG.Tweening; using Sirenix.OdinInspector; using System; using UnityEngine; using UnityEngine."/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "https://0x4b404ec.github.io/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Unity PlayableDirector正播倒播处理",
+      "item": "https://0x4b404ec.github.io/posts/unityplayabledirector%E6%AD%A3%E6%92%AD%E5%80%92%E6%92%AD%E5%A4%84%E7%90%86/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Unity PlayableDirector正播倒播处理",
+  "name": "Unity PlayableDirector正播倒播处理",
+  "description": "Unity PlayableDirector(Timeline) 正播倒播处理 项目要求控制Timeline的播放状态，官方给出的方案只有正播的处理，并没有倒播的接口。\n而且网上搜索的一些方案都是使用协程，但是协程在处理中途暂停继续播放上比较难处理。\n所以自己随便写了一个。处理上比较傻瓜。\n下载DoTween插件 略\u0026hellip;\nTimelineHelper.cs 主要是提供了两个静态接口，用来实现挂TimelineDirector组件\nusing UnityEngine; using UnityEngine.Playables; public static class PlayableExpansion { /// \u0026lt;summary\u0026gt; /// 为director添加自定义控制器 /// \u0026lt;/summary\u0026gt; /// \u0026lt;param name=\u0026#34;director\u0026#34;\u0026gt;\u0026lt;/param\u0026gt; /// \u0026lt;returns\u0026gt;\u0026lt;/returns\u0026gt; public static PlayableController AddPlayableController(this PlayableDirector director) { return director.gameObject.AddComponent\u0026lt;PlayableController\u0026gt;(); } /// \u0026lt;summary\u0026gt; /// 为obj添加自定义控制器 /// \u0026lt;/summary\u0026gt; /// \u0026lt;param name=\u0026#34;obj\u0026#34;\u0026gt;\u0026lt;/param\u0026gt; /// \u0026lt;returns\u0026gt;\u0026lt;/returns\u0026gt; public static PlayableController AddPlayableController(this GameObject obj) { return obj.AddComponent\u0026lt;PlayableController\u0026gt;(); } } TimelineDirector.cs Timeline的相关控制封装，没有用官方播放的API，只用到了PlayableDirector时间和采样(PlayableDirector.time和PlayableDirector.Evaluate())\nusing DG.Tweening; using Sirenix.OdinInspector; using System; using UnityEngine; using UnityEngine.",
+  "keywords": [
+    
+  ],
+  "articleBody": "Unity PlayableDirector(Timeline) 正播倒播处理 项目要求控制Timeline的播放状态，官方给出的方案只有正播的处理，并没有倒播的接口。\n而且网上搜索的一些方案都是使用协程，但是协程在处理中途暂停继续播放上比较难处理。\n所以自己随便写了一个。处理上比较傻瓜。\n下载DoTween插件 略…\nTimelineHelper.cs 主要是提供了两个静态接口，用来实现挂TimelineDirector组件\nusing UnityEngine; using UnityEngine.Playables; public static class PlayableExpansion { /// /// 为director添加自定义控制器 /// /// /// public static PlayableController AddPlayableController(this PlayableDirector director) { return director.gameObject.AddComponent(); } /// /// 为obj添加自定义控制器 /// /// /// public static PlayableController AddPlayableController(this GameObject obj) { return obj.AddComponent(); } } TimelineDirector.cs Timeline的相关控制封装，没有用官方播放的API，只用到了PlayableDirector时间和采样(PlayableDirector.time和PlayableDirector.Evaluate())\nusing DG.Tweening; using Sirenix.OdinInspector; using System; using UnityEngine; using UnityEngine.Playables; [RequireComponent(typeof(PlayableDirector))] public class PlayableController : MonoBehaviour { #region ENUM public enum Status { NULL, PLAYING, PAUSED, STOPPED, } public enum Direction { NULL, FORWARD, BACKWARD } #endregion [SerializeField] private PlayableDirector m_playableDirector; /// /// 当前播放状态(如果用不到可是删除，现在这个字段只是一个状态的记录) /// public Status CurrentPlayStatus { get; private set; } = Status.NULL; /// /// 当前播放方向(如果用不到可是删除，现在这个字段只是一个状态的记录) /// public Direction CurrentPlayDirection { get; private set; } = Direction.NULL; /// /// 当前播放进度 /// public double FullProgress { get; private set; } = 0d; /// /// 片段进度 /// //public double ClipProgress { get; private set; } = 0d; /// /// 当前播放进度归一化 /// public double CurrentNormalizedProgress =\u003e FullProgress / Duration; [Range(0f, 5f)] public float PlaySpeed = 1f; /// /// 播放模式 /// public WrapMode WrapMode = WrapMode.Once; /// /// 开始播放事件, 返回时 时间点，和触发时方向 /// public Action\u003cdouble, Direction\u003e OnPlay; /// /// 暂停播放事件, 返回时 时间点，和触发时方向 /// public Action\u003cdouble, Direction\u003e OnPause; /// /// 停止播放事件, 返回时 时间点，和触发时方向 /// public Action\u003cdouble, Direction\u003e OnStop; /// /// 继续播放事件, 返回时 时间点，和触发时方向 /// public Action\u003cdouble, Direction\u003e OnContinue; /// /// 当播放自动停止，既本次的ProgressExecute播放到指定事件点时触发； /// public Action\u003cdouble\u003e OnAutoStop; public Action\u003cdouble\u003e OnUpdate; /// /// Timeline长度 /// public double Duration { get; private set; } = -1f; private Tweener m_timeTween; public bool TweenActive =\u003e m_timeTween.IsActive(); private void Awake() { m_playableDirector = GetComponent(); m_playableDirector.playOnAwake = false; Duration = m_playableDirector.duration; CurrentPlayStatus = Status.STOPPED; } /// /// 继续播放 /// [Button] public void Continue() { if (m_timeTween.IsActive()) { CurrentPlayStatus = Status.PLAYING; m_timeTween.Play(); } OnContinue?.Invoke(FullProgress, CurrentPlayDirection); } /// /// 从暂停时间点正向播放, 应用在倒播中途暂停后切换为正播 /// [Button] public void ContinuePlayForwardByPausePoint() { CurrentPlayStatus = Status.PLAYING; CurrentPlayDirection = Direction.FORWARD; m_timeTween.Kill(); ProgressExecute(Duration); OnContinue?.Invoke(FullProgress, CurrentPlayDirection); } /// /// 从暂停时间点反向播放, 应用在正播中途暂停后切换为倒播 /// [Button] public void ContinuePlayBackwardByPausePoint() { CurrentPlayStatus = Status.PLAYING; CurrentPlayDirection = Direction.BACKWARD; m_timeTween.Kill(); ProgressExecute(0); OnContinue?.Invoke(FullProgress, CurrentPlayDirection); } public void PlayClip(double start, double stop) { if (start == stop) return; CurrentPlayStatus = Status.PLAYING; CurrentPlayDirection = start \u003c stop ? Direction.FORWARD : Direction.BACKWARD; m_timeTween.Kill(); FullProgress = start; ProgressExecute(stop); OnPlay?.Invoke(start, CurrentPlayDirection); } /// /// 从开始播放 /// [Button] public void PlayForward() { CurrentPlayStatus = Status.PLAYING; CurrentPlayDirection = Direction.FORWARD; m_timeTween.Kill(); FullProgress = 0d; ProgressExecute(Duration); OnPlay?.Invoke(FullProgress, CurrentPlayDirection); } /// /// 从结尾倒放 /// [Button] public void PlayBackward() { CurrentPlayStatus = Status.PLAYING; CurrentPlayDirection = Direction.BACKWARD; m_timeTween.Kill(); FullProgress = Duration; ProgressExecute(0); OnPlay?.Invoke(FullProgress, CurrentPlayDirection); } /// /// 暂停播放 /// [Button] public void Pause() { CurrentPlayStatus = Status.PAUSED; m_timeTween.Pause(); OnPause?.Invoke(FullProgress, CurrentPlayDirection); } /// /// 停止播放 /// [Button] public void Stop() { CurrentPlayStatus = Status.STOPPED; m_timeTween.Kill(); FullProgress = 0d; m_playableDirector.time = FullProgress; m_playableDirector.Evaluate(); OnStop?.Invoke(FullProgress, CurrentPlayDirection); } [Button] public void JumpTo(double progress) { // 直接取样 m_playableDirector.time = progress; m_playableDirector.Evaluate(); FullProgress = progress; OnUpdate?.Invoke(progress); } [Button] public void ForceKill() { m_timeTween.Kill(); CurrentPlayStatus = Status.PAUSED; } private void ProgressExecute(double targetProgress) { // 使用DoTween最当前时间进行线性过渡 m_timeTween = DOTween.To(() =\u003e FullProgress, x =\u003e FullProgress = x, targetProgress, PlaySpeed).SetSpeedBased() .SetEase(Ease.Linear); // 做出限制避免bug FullProgress = Clamp(FullProgress, 0d, Duration); m_timeTween.OnUpdate(() =\u003e { JumpTo(FullProgress); }); m_timeTween.OnComplete(() =\u003e { CurrentPlayStatus = FullProgress == Duration ? Status.STOPPED : Status.PAUSED; OnAutoStop?.Invoke(FullProgress); }); m_timeTween.Play(); } /// /// 针对Double的Clamp /// private static double Clamp(double value, double min, double max) { if (value \u003c min) value = min; else if (value \u003e max) value = max; return value; } } TimelineTestController 测试类创建一个场景自己制作一个Timeline, 绑定一些按钮。\nusing System.Collections; using System.Collections.Generic; using Tools; using UnityEngine; using UnityEngine.Playables; using UnityEngine.UI; public class TimelineTestController : MonoBehaviour { public PlayableDirector PlayableDirector; public Button PlayForward; public Button PlayBackward; public Button Pause; public Button Stop; public Button Continue; public Button ContinueForward; public Button ContinueBackward; public TimelineDirector Director; public void Start() { Director = TimelineHelper.CreateTimelineDirector(PlayableDirector); Director.OnPlay = (t, d) =\u003e { Debug.Log($\"OnPlay time {t} dir {d}\"); }; Director.OnPause = (t, d) =\u003e { Debug.Log($\"OnPause time {t} dir {d}\"); }; Director.OnContinue = (t, d) =\u003e { Debug.Log($\"OnContinue time {t} dir {d}\"); }; Director.OnStop = (t, d) =\u003e { Debug.Log($\"OnStop time {t} dir {d}\"); }; PlayForward.onClick.AddListener(() =\u003e { Director.PlayForward(); }); PlayBackward.onClick.AddListener(() =\u003e { Director.PlayBackward(); }); Pause.onClick.AddListener(() =\u003e { Director.Pause(); }); Stop.onClick.AddListener(() =\u003e { Director.Stop(); }); Continue.onClick.AddListener(() =\u003e { Director.Continue(); }); ContinueForward.onClick.AddListener(() =\u003e { Director.ContinuePlayForwardByPausePoint(); }); ContinueBackward.onClick.AddListener(() =\u003e { Director.ContinuePlayBackwardByPausePoint(); }); } } ",
+  "wordCount" : "744",
+  "inLanguage": "en",
+  "datePublished": "2023-12-31T19:57:41+08:00",
+  "dateModified": "2023-12-31T19:57:41+08:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://0x4b404ec.github.io/posts/unityplayabledirector%E6%AD%A3%E6%92%AD%E5%80%92%E6%92%AD%E5%A4%84%E7%90%86/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "0x4b404ec's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://0x4b404ec.github.io/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://0x4b404ec.github.io/" accesskey="h" title="0x4b404ec&#39;s Blog (Alt + H)">0x4b404ec&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    
+    <h1 class="post-title entry-hint-parent">
+      Unity PlayableDirector正播倒播处理
+    </h1>
+    <div class="post-meta"><span title='2023-12-31 19:57:41 +0800 CST'>December 31, 2023</span>
+
+</div>
+  </header> 
+  <div class="post-content"><h1 id="unity-playabledirectortimeline-正播倒播处理">Unity PlayableDirector(Timeline) 正播倒播处理<a hidden class="anchor" aria-hidden="true" href="#unity-playabledirectortimeline-正播倒播处理">#</a></h1>
+<blockquote>
+<p>项目要求控制Timeline的播放状态，官方给出的方案只有正播的处理，并没有倒播的接口。</p>
+<p>而且网上搜索的一些方案都是使用<a href="https://so.csdn.net/so/search?q=%E5%8D%8F%E7%A8%8B&amp;spm=1001.2101.3001.7020">协程</a>，但是协程在处理中途暂停继续播放上比较难处理。</p>
+<p>所以自己随便写了一个。处理上比较傻瓜。</p>
+</blockquote>
+<h2 id="下载dotween插件">下载DoTween插件<a hidden class="anchor" aria-hidden="true" href="#下载dotween插件">#</a></h2>
+<p>略&hellip;</p>
+<h2 id="timelinehelpercs">TimelineHelper.cs<a hidden class="anchor" aria-hidden="true" href="#timelinehelpercs">#</a></h2>
+<p>主要是提供了两个静态接口，用来实现挂TimelineDirector组件</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c#" data-lang="c#"><span style="display:flex;"><span><span style="color:#66d9ef">using</span> UnityEngine;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">using</span> UnityEngine.Playables;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PlayableExpansion</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// 为director添加自定义控制器</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;/summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;param name=&#34;director&#34;&gt;&lt;/param&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;returns&gt;&lt;/returns&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> PlayableController AddPlayableController(<span style="color:#66d9ef">this</span> PlayableDirector director)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> director.gameObject.AddComponent&lt;PlayableController&gt;();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// 为obj添加自定义控制器</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;/summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;param name=&#34;obj&#34;&gt;&lt;/param&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;returns&gt;&lt;/returns&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> PlayableController AddPlayableController(<span style="color:#66d9ef">this</span> GameObject obj)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> obj.AddComponent&lt;PlayableController&gt;();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>	
+</span></span></code></pre></div><h2 id="timelinedirectorcs">TimelineDirector.cs<a hidden class="anchor" aria-hidden="true" href="#timelinedirectorcs">#</a></h2>
+<p>Timeline的相关控制封装，没有用官方播放的API，只用到了PlayableDirector时间和采样(PlayableDirector.time和PlayableDirector.Evaluate())</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c#" data-lang="c#"><span style="display:flex;"><span><span style="color:#66d9ef">using</span> DG.Tweening;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">using</span> Sirenix.OdinInspector;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">using</span> System;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">using</span> UnityEngine;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">using</span> UnityEngine.Playables;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">[RequireComponent(typeof(PlayableDirector))]</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PlayableController</span> : MonoBehaviour
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#region</span> ENUM
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">enum</span> Status
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        NULL,
+</span></span><span style="display:flex;"><span>        PLAYING,
+</span></span><span style="display:flex;"><span>        PAUSED,
+</span></span><span style="display:flex;"><span>        STOPPED,
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">enum</span> Direction
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        NULL,
+</span></span><span style="display:flex;"><span>        FORWARD,
+</span></span><span style="display:flex;"><span>        BACKWARD
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">#endregion</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">    [SerializeField]</span> <span style="color:#66d9ef">private</span> PlayableDirector m_playableDirector;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// 当前播放状态(如果用不到可是删除，现在这个字段只是一个状态的记录)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;/summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Status CurrentPlayStatus { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">set</span>; } = Status.NULL;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// 当前播放方向(如果用不到可是删除，现在这个字段只是一个状态的记录)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;/summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Direction CurrentPlayDirection { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">set</span>; } = Direction.NULL;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// 当前播放进度</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;/summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">double</span> FullProgress { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">set</span>; } = <span style="color:#ae81ff">0d</span>;
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// 片段进度</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;/summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">//public double ClipProgress { get; private set; } = 0d;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// 当前播放进度归一化</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;/summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">double</span> CurrentNormalizedProgress =&gt; FullProgress / Duration;
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">    [Range(0f, 5f)]</span> <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">float</span> PlaySpeed = <span style="color:#ae81ff">1f</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// 播放模式</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;/summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> WrapMode WrapMode = WrapMode.Once;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// 开始播放事件, 返回时 时间点，和触发时方向</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;/summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Action&lt;<span style="color:#66d9ef">double</span>, Direction&gt; OnPlay;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// 暂停播放事件, 返回时 时间点，和触发时方向</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;/summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Action&lt;<span style="color:#66d9ef">double</span>, Direction&gt; OnPause;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// 停止播放事件, 返回时 时间点，和触发时方向</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;/summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Action&lt;<span style="color:#66d9ef">double</span>, Direction&gt; OnStop;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// 继续播放事件, 返回时 时间点，和触发时方向</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;/summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Action&lt;<span style="color:#66d9ef">double</span>, Direction&gt; OnContinue;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// 当播放自动停止，既本次的ProgressExecute播放到指定事件点时触发；</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;/summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Action&lt;<span style="color:#66d9ef">double</span>&gt; OnAutoStop;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Action&lt;<span style="color:#66d9ef">double</span>&gt; OnUpdate;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// Timeline长度</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;/summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">double</span> Duration { <span style="color:#66d9ef">get</span>; <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">set</span>; } = -<span style="color:#ae81ff">1f</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> Tweener m_timeTween;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">bool</span> TweenActive =&gt; m_timeTween.IsActive();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> Awake()
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        m_playableDirector = GetComponent&lt;PlayableDirector&gt;();
+</span></span><span style="display:flex;"><span>        m_playableDirector.playOnAwake = <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>        Duration = m_playableDirector.duration;
+</span></span><span style="display:flex;"><span>        CurrentPlayStatus = Status.STOPPED;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// 继续播放</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;/summary&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">    [Button]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> Continue()
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (m_timeTween.IsActive())
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            CurrentPlayStatus = Status.PLAYING;
+</span></span><span style="display:flex;"><span>            m_timeTween.Play();
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        OnContinue?.Invoke(FullProgress, CurrentPlayDirection);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// 从暂停时间点正向播放, 应用在倒播中途暂停后切换为正播</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;/summary&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">    [Button]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> ContinuePlayForwardByPausePoint()
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        CurrentPlayStatus = Status.PLAYING;
+</span></span><span style="display:flex;"><span>        CurrentPlayDirection = Direction.FORWARD;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        m_timeTween.Kill();
+</span></span><span style="display:flex;"><span>        ProgressExecute(Duration);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        OnContinue?.Invoke(FullProgress, CurrentPlayDirection);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// 从暂停时间点反向播放, 应用在正播中途暂停后切换为倒播</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;/summary&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">    [Button]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> ContinuePlayBackwardByPausePoint()
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        CurrentPlayStatus = Status.PLAYING;
+</span></span><span style="display:flex;"><span>        CurrentPlayDirection = Direction.BACKWARD;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        m_timeTween.Kill();
+</span></span><span style="display:flex;"><span>        ProgressExecute(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        OnContinue?.Invoke(FullProgress, CurrentPlayDirection);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> PlayClip(<span style="color:#66d9ef">double</span> start, <span style="color:#66d9ef">double</span> stop)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (start == stop) <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        CurrentPlayStatus = Status.PLAYING;
+</span></span><span style="display:flex;"><span>        CurrentPlayDirection = start &lt; stop ? Direction.FORWARD : Direction.BACKWARD;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        m_timeTween.Kill();
+</span></span><span style="display:flex;"><span>        FullProgress = start;
+</span></span><span style="display:flex;"><span>        ProgressExecute(stop);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        OnPlay?.Invoke(start, CurrentPlayDirection);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// 从开始播放</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;/summary&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">    [Button]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> PlayForward()
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        CurrentPlayStatus = Status.PLAYING;
+</span></span><span style="display:flex;"><span>        CurrentPlayDirection = Direction.FORWARD;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        m_timeTween.Kill();
+</span></span><span style="display:flex;"><span>        FullProgress = <span style="color:#ae81ff">0d</span>;
+</span></span><span style="display:flex;"><span>        ProgressExecute(Duration);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        OnPlay?.Invoke(FullProgress, CurrentPlayDirection);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// 从结尾倒放</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;/summary&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">    [Button]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> PlayBackward()
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        CurrentPlayStatus = Status.PLAYING;
+</span></span><span style="display:flex;"><span>        CurrentPlayDirection = Direction.BACKWARD;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        m_timeTween.Kill();
+</span></span><span style="display:flex;"><span>        FullProgress = Duration;
+</span></span><span style="display:flex;"><span>        ProgressExecute(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        OnPlay?.Invoke(FullProgress, CurrentPlayDirection);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// 暂停播放</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;/summary&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">    [Button]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> Pause()
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        CurrentPlayStatus = Status.PAUSED;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        m_timeTween.Pause();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        OnPause?.Invoke(FullProgress, CurrentPlayDirection);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// 停止播放</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;/summary&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">    [Button]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> Stop()
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        CurrentPlayStatus = Status.STOPPED;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        m_timeTween.Kill();
+</span></span><span style="display:flex;"><span>        FullProgress = <span style="color:#ae81ff">0d</span>;
+</span></span><span style="display:flex;"><span>        m_playableDirector.time = FullProgress;
+</span></span><span style="display:flex;"><span>        m_playableDirector.Evaluate();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        OnStop?.Invoke(FullProgress, CurrentPlayDirection);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">    [Button]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> JumpTo(<span style="color:#66d9ef">double</span> progress)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 直接取样</span>
+</span></span><span style="display:flex;"><span>        m_playableDirector.time = progress;
+</span></span><span style="display:flex;"><span>        m_playableDirector.Evaluate();
+</span></span><span style="display:flex;"><span>        FullProgress = progress;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        OnUpdate?.Invoke(progress);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">    [Button]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> ForceKill()
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        m_timeTween.Kill();
+</span></span><span style="display:flex;"><span>        CurrentPlayStatus = Status.PAUSED;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> ProgressExecute(<span style="color:#66d9ef">double</span> targetProgress)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 使用DoTween最当前时间进行线性过渡</span>
+</span></span><span style="display:flex;"><span>        m_timeTween = DOTween.To(() =&gt; FullProgress, x =&gt; FullProgress = x, targetProgress, PlaySpeed).SetSpeedBased()
+</span></span><span style="display:flex;"><span>            .SetEase(Ease.Linear);
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 做出限制避免bug</span>
+</span></span><span style="display:flex;"><span>        FullProgress = Clamp(FullProgress, <span style="color:#ae81ff">0d</span>, Duration);
+</span></span><span style="display:flex;"><span>        m_timeTween.OnUpdate(() =&gt; { JumpTo(FullProgress); });
+</span></span><span style="display:flex;"><span>        m_timeTween.OnComplete(() =&gt;
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            CurrentPlayStatus = FullProgress == Duration ? Status.STOPPED : Status.PAUSED;
+</span></span><span style="display:flex;"><span>            OnAutoStop?.Invoke(FullProgress);
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>        m_timeTween.Play();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// 针对Double的Clamp</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/// &lt;/summary&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">double</span> Clamp(<span style="color:#66d9ef">double</span> <span style="color:#66d9ef">value</span>, <span style="color:#66d9ef">double</span> min, <span style="color:#66d9ef">double</span> max)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">value</span> &lt; min)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">value</span> = min;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">value</span> &gt; max)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">value</span> = max;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">value</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="timelinetestcontroller">TimelineTestController<a hidden class="anchor" aria-hidden="true" href="#timelinetestcontroller">#</a></h2>
+<p>测试类创建一个场景自己制作一个Timeline, 绑定一些按钮。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c#" data-lang="c#"><span style="display:flex;"><span><span style="color:#66d9ef">using</span> System.Collections;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">using</span> System.Collections.Generic;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">using</span> Tools;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">using</span> UnityEngine;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">using</span> UnityEngine.Playables;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">using</span> UnityEngine.UI;
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TimelineTestController</span> : MonoBehaviour
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> PlayableDirector PlayableDirector;
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Button PlayForward;
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Button PlayBackward;
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Button Pause;
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Button Stop;
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Button Continue;
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Button ContinueForward;
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> Button ContinueBackward;
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> TimelineDirector Director;
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> Start()
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        Director = TimelineHelper.CreateTimelineDirector(PlayableDirector);
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>        Director.OnPlay = (t, d) =&gt;
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            Debug.Log(<span style="color:#e6db74">$&#34;OnPlay time {t} dir {d}&#34;</span>);
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>        Director.OnPause = (t, d) =&gt;
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            Debug.Log(<span style="color:#e6db74">$&#34;OnPause time {t} dir {d}&#34;</span>);
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>        Director.OnContinue = (t, d) =&gt;
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            Debug.Log(<span style="color:#e6db74">$&#34;OnContinue time {t} dir {d}&#34;</span>);
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>        Director.OnStop = (t, d) =&gt;
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            Debug.Log(<span style="color:#e6db74">$&#34;OnStop time {t} dir {d}&#34;</span>);
+</span></span><span style="display:flex;"><span>        };
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>        PlayForward.onClick.AddListener(() =&gt;
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            Director.PlayForward();
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>        PlayBackward.onClick.AddListener(() =&gt;
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            Director.PlayBackward();
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>        Pause.onClick.AddListener(() =&gt;
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            Director.Pause();
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>        Stop.onClick.AddListener(() =&gt;
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            Director.Stop();
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>        Continue.onClick.AddListener(() =&gt;
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            Director.Continue();
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>        ContinueForward.onClick.AddListener(() =&gt;
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            Director.ContinuePlayForwardByPausePoint();
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>        ContinueBackward.onClick.AddListener(() =&gt;
+</span></span><span style="display:flex;"><span>        {
+</span></span><span style="display:flex;"><span>            Director.ContinuePlayBackwardByPausePoint();
+</span></span><span style="display:flex;"><span>        });
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div>
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+    <span>&copy; 2023 <a href="https://0x4b404ec.github.io/">0x4b404ec&#39;s Blog</a></span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

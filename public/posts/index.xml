@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>0x4b404ec&#39;s Blog</title>
-    <link>https://0x4b404ec.github.io/</link>
-    <description>Recent content on 0x4b404ec&#39;s Blog</description>
+    <title>Posts on 0x4b404ec&#39;s Blog</title>
+    <link>https://0x4b404ec.github.io/posts/</link>
+    <description>Recent content in Posts on 0x4b404ec&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <lastBuildDate>Sun, 31 Dec 2023 19:57:41 +0800</lastBuildDate>
-    <atom:link href="https://0x4b404ec.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://0x4b404ec.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Unity PlayableDirector正播倒播处理</title>
       <link>https://0x4b404ec.github.io/posts/unityplayabledirector%E6%AD%A3%E6%92%AD%E5%80%92%E6%92%AD%E5%A4%84%E7%90%86/</link>
