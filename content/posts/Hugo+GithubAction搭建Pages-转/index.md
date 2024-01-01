@@ -10,7 +10,7 @@ showToc: true
 # 目录默认展开
 TocOpen: true
 hidemeta: false
-comments: false
+comments: true
 # canonicalURL: "https://canonical.url/to/page"
 disableHLJS: true # to disable highlightjs
 disableShare: false

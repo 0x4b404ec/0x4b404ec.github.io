@@ -11,8 +11,85 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 31 Dec 2023 20:31:46 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 01 Jan 2024 12:58:16 +0800</lastBuildDate>
     <atom:link href="https://0x4b404ec.github.io/tags/hugo/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hugo PaperMod主题添加utterances评论</title>
+      <link>https://0x4b404ec.github.io/posts/hugo-papermod%E4%B8%BB%E9%A2%98%E6%B7%BB%E5%8A%A0utterances%E8%AF%84%E8%AE%BA/</link>
+      <pubDate>Mon, 01 Jan 2024 12:58:16 +0800</pubDate>
+      <guid>https://0x4b404ec.github.io/posts/hugo-papermod%E4%B8%BB%E9%A2%98%E6%B7%BB%E5%8A%A0utterances%E8%AF%84%E8%AE%BA/</guid>
+      <description>Show Post Description under Title</description>
+      <content:encoded><![CDATA[<h1 id="hugo-papermod主题添加utterances评论">Hugo PaperMod主题添加utterances评论</h1>
+<h2 id="what-is-utterances">What is &lsquo;utterances&rsquo;</h2>
+<blockquote>
+<p><a href="https://utteranc.es/">https://utteranc.es/</a></p>
+</blockquote>
+<p><a href="https://utteranc.es/">utterances</a> 是一款基于 GitHub issues 的开源评论插件. 主打免费开源～</p>
+<h2 id="安装utterances">安装Utterances</h2>
+<h3 id="申请github-app">申请Github App</h3>
+<ol>
+<li>
+<p>打开 <a href="https://github.com/apps/utterances">Utterances</a> 进行安装</p>
+</li>
+<li>
+<p>选择要连接的库</p>
+<ol>
+<li>确保选择的库是公开（public）的，否则你的读者将无法查看问题/评论。</li>
+<li>确保在对应库安装应用程序，否则用户将无法发表评论。</li>
+<li>如果你的库是fork的一个分支，在设置页面中并确保issues功能是打开的。</li>
+</ol>
+</li>
+</ol>
+<h3 id="修改站点配置文件">修改站点配置文件</h3>
+<ol>
+<li>
+<p>在根目录<code>layouts\partials</code>下创建<code>comments.html</code>文件并编辑（注意不是主题文件夹中的layouts）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl">{{- /* Comments area start */ -}}
+</span></span><span class="line"><span class="cl">{{- /* to add comments read =&gt; https://gohugo.io/content-management/comments/ */ -}}
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;https://utteranc.es/client.js&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="na">repo</span><span class="o">=</span><span class="s">&#34;安装app的个人库名&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="na">issue-term</span><span class="o">=</span><span class="s">&#34;title&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="na">label</span><span class="o">=</span><span class="s">&#34;Comment&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="na">theme</span><span class="o">=</span><span class="s">&#34;github-light&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="na">crossorigin</span><span class="o">=</span><span class="s">&#34;anonymous&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="na">async</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">{{- /* Comments area end */ -}}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>其中 repo格式类似于：<code>0x4b404ec/0x4b404ec.github.io</code></p>
+</li>
+<li>
+<p>在根目录修改<code>config.yaml</code>文件, 修改site参数<code>params.comments</code>为<code>true</code>（同时也要确保page的配置文件中<code>comments</code>也为<code>true</code>）</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">params:
+</span></span><span class="line"><span class="cl">	comments: true
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+]]></content:encoded>
+    </item>
     <item>
       <title>[转] Hugo&#43;GithubAction搭建Pages</title>
       <link>https://0x4b404ec.github.io/posts/hugo&#43;githubaction%E6%90%AD%E5%BB%BApages-%E8%BD%AC/</link>

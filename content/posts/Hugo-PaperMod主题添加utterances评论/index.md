@@ -1,7 +1,7 @@
 ---
 
 # 创建时间
-date: {{ .Date }}
+date: 2024-01-01T12:58:16+08:00
 
 # 设置页面顺序或将文章钉在列表的顶部
 # weight: 1
@@ -88,10 +88,10 @@ cover:
 searchHidden: false
 
 # 标题
-title: '{{ replace .File.ContentBaseName "-" " " | title }}'
+title: 'Hugo PaperMod主题添加utterances评论'
 
 # 标签
-tags: ["Normal"]
+tags: ["Hugo","PaperMod","utterances"]
 
 # 是否为草稿
 draft: false
@@ -100,3 +100,54 @@ draft: false
 description: "Show Post Description under Title"
 
 ---
+
+
+
+# Hugo PaperMod主题添加utterances评论
+
+
+
+## What is 'utterances'
+
+> https://utteranc.es/
+
+[utterances](https://utteranc.es/) 是一款基于 GitHub issues 的开源评论插件. 主打免费开源～
+
+## 安装Utterances
+
+### 申请Github App
+
+1. 打开 [Utterances](https://github.com/apps/utterances) 进行安装
+
+2. 选择要连接的库
+   1. 确保选择的库是公开（public）的，否则你的读者将无法查看问题/评论。
+   2. 确保在对应库安装应用程序，否则用户将无法发表评论。
+   3. 如果你的库是fork的一个分支，在设置页面中并确保issues功能是打开的。
+
+### 修改站点配置文件
+
+1. 在根目录`layouts\partials`下创建`comments.html`文件并编辑（注意不是主题文件夹中的layouts）
+
+   ```html
+   {{- /* Comments area start */ -}}
+   {{- /* to add comments read => https://gohugo.io/content-management/comments/ */ -}}
+   <script src="https://utteranc.es/client.js"
+       repo="安装app的个人库名"
+       issue-term="title"
+       label="Comment"
+       theme="github-light"
+       crossorigin="anonymous"
+       async>
+   </script>
+   {{- /* Comments area end */ -}}
+   
+   ```
+
+   其中 repo格式类似于：`0x4b404ec/0x4b404ec.github.io`
+
+2. 在根目录修改`config.yaml`文件, 修改site参数`params.comments`为`true`（同时也要确保page的配置文件中`comments`也为`true`）
+
+   ```ymal
+   params:
+   	comments: true
+   ```

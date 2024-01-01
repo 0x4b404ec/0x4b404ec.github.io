@@ -22,11 +22,11 @@ minify:
   disableXML: true
   minifyOutput: true
 
-utteranc:
-    enable: true
-    repo: "https://github.com/0x4b404ec/0x4b404ec.github.io" 
-    issueTerm: "title"
-    theme: "github-light"  
+# utteranc:
+#     enable: true
+#     repo: "0x4b404ec/0x4b404ec.github.io" 
+#     issueTerm: "title"
+#     theme: "github-light"  
 
 params:
   # 设置环境
