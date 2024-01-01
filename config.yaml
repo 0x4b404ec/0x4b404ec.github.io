@@ -22,6 +22,12 @@ minify:
   disableXML: true
   minifyOutput: true
 
+# utteranc:
+#     enable: true
+#     repo: "0x4b404ec/0x4b404ec.github.io" 
+#     issueTerm: "title"
+#     theme: "github-light"  
+
 params:
   # 设置环境
   env: production # to enable google analytics, opengraph, twitter-cards and schema.
@@ -64,7 +70,7 @@ params:
   # 禁用返回最上方
   disableScrollToTop: false
   # 是否显示评论
-  comments: false
+  comments: true
   # 是否隐藏摘要
   hideSummary: false
   # 使用hugo目录
@@ -210,3 +216,8 @@ outputs:
     - HTML
     - RSS
     - JSON # is necessary
+
+
+services:
+  disqus:
+    shortname: 
