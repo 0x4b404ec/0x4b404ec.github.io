@@ -82,6 +82,10 @@ params:
   
   enableGitInfo: true
 
+  # 不蒜子浏览统计
+  busuanzi:
+    enable: true
+
   # 网站图标
   assets:    
     # 设置网站图标
