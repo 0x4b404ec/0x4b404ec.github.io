@@ -11,8 +11,112 @@
     </image>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 01 Jan 2024 12:58:16 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 03 Jan 2024 22:17:42 +0800</lastBuildDate>
     <atom:link href="https://0x4b404ec.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hugo PaperMod主题添加不蒜子Busuanzi浏览统计</title>
+      <link>https://0x4b404ec.github.io/posts/hugo-papermod%E4%B8%BB%E9%A2%98%E6%B7%BB%E5%8A%A0%E4%B8%8D%E8%92%9C%E5%AD%90busuanzi%E6%B5%8F%E8%A7%88%E7%BB%9F%E8%AE%A1/</link>
+      <pubDate>Wed, 03 Jan 2024 22:17:42 +0800</pubDate>
+      <guid>https://0x4b404ec.github.io/posts/hugo-papermod%E4%B8%BB%E9%A2%98%E6%B7%BB%E5%8A%A0%E4%B8%8D%E8%92%9C%E5%AD%90busuanzi%E6%B5%8F%E8%A7%88%E7%BB%9F%E8%AE%A1/</guid>
+      <description>Hugo PaperMod主题中使用 不蒜子Busuanzi 进行站点的浏览统计</description>
+      <content:encoded><![CDATA[<h1 id="不蒜子busuanzi浏览统计">不蒜子Busuanzi浏览统计</h1>
+<blockquote>
+<p><a href="https://busuanzi.ibruce.info/">Busuanzi</a></p>
+</blockquote>
+<p>我是使用了Git的子模块进行主题的管理，所以为了保持子模块的完整性，所有修改都在Hugo框架中进行。</p>
+<h2 id="headhtml">head.html</h2>
+<p>复制</p>
+<p><code>head.html</code>文件位于<code>[Hugo_blog]/themes/PaperMod/layouts/partials/head.html</code></p>
+<p>至</p>
+<p><code>[Hugo_blog]/layouts/partials/head.html</code></p>
+<p><strong>(如没有文件夹需要自己创建)</strong></p>
+<p>搜索<code>{{- /* Styles */}}</code> 在其上一行添加代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl">{{- if .Site.Params.busuanzi.enable -}}
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">script</span> <span class="na">async</span> <span class="na">src</span><span class="o">=</span><span class="s">&#34;//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&#34;referrer&#34;</span> <span class="na">content</span><span class="o">=</span><span class="s">&#34;no-referrer-when-downgrade&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">{{- end -}}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="footerhtml">footer.html</h2>
+<p>复制</p>
+<p><code>footer.html</code>文件位于<code>[Hugo_blog]/themes/PaperMod/layouts/partials/footer.html</code></p>
+<p>至</p>
+<p><code>[Hugo_blog]/layouts/partials/footer.html</code></p>
+<p><strong>(如没有文件夹需要自己创建)</strong></p>
+<p>在footer标签中，添加新代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl">{{ if .Site.Params.busuanzi.enable -}}
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&#34;busuanzi-footer&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">span</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;busuanzi_container_site_pv&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    本站总访问量<span class="p">&lt;</span><span class="nt">span</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;busuanzi_value_site_pv&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>次
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">span</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;busuanzi_container_site_uv&#34;</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">    本站访客数<span class="p">&lt;</span><span class="nt">span</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;busuanzi_value_site_uv&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>人次
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">{{- end -}}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="singlehtml">single.html</h2>
+<p>复制</p>
+<p><code>single.html</code>文件位于<code>[Hugo_blog]/themes/PaperMod/layouts/_default/single.html</code></p>
+<p>至</p>
+<p><code>[Hugo_blog]/layouts/_default/single.html</code></p>
+<p><strong>(如没有文件夹需要自己创建)</strong></p>
+<p>搜索<code>{{- partial &quot;post_canonical.html&quot; . -}}</code>在其下一行添加代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl">{{ if .Site.Params.busuanzi.enable -}}
+</span></span><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">div</span>  <span class="na">class</span><span class="o">=</span><span class="s">&#34;meta-item&#34;</span><span class="p">&gt;</span><span class="err">&amp;</span>nbsp·<span class="err">&amp;</span>nbsp
+</span></span><span class="line"><span class="cl">  <span class="p">&lt;</span><span class="nt">span</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;busuanzi_container_page_pv&#34;</span><span class="p">&gt;</span>本文阅读量<span class="p">&lt;</span><span class="nt">span</span> <span class="na">id</span><span class="o">=</span><span class="s">&#34;busuanzi_value_page_pv&#34;</span><span class="p">&gt;&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>次<span class="p">&lt;/</span><span class="nt">span</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</span></span><span class="line"><span class="cl">{{- end }}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="configyaml">Config.yaml</h2>
+<p>启动Busuanzi统计功能，返回本目录在配置文件params中添加参数</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">params</span><span class="p">:</span><span class="w">  
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">busuanzi</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">enable</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="c"># 是否启动Busuanzi统计</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div>]]></content:encoded>
+    </item>
     <item>
       <title>Hugo PaperMod主题添加utterances评论</title>
       <link>https://0x4b404ec.github.io/posts/hugo-papermod%E4%B8%BB%E9%A2%98%E6%B7%BB%E5%8A%A0utterances%E8%AF%84%E8%AE%BA/</link>
