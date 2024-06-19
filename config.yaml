@@ -2,18 +2,12 @@ theme: "PaperMod"
 
 baseURL: "https://0x4b404ec.github.io/"
 title: '0x4b404ec'
-# 页数
-paginate: 5
 
-# 启用机器人TXT
-enableRobotsTXT: true
-
-# 创建时包括草稿
-buildDrafts: false
-# 
-buildFuture: false
-# 
-buildExpired: false
+paginate: 5                                       # 页数
+enableRobotsTXT: true                             # 启用机器人TXT
+buildDrafts: false                                # 创建时包括草稿
+buildFuture: false                                # 
+buildExpired: false                               # 
 
 # google分析
 # googleAnalytics: UA-123-45
